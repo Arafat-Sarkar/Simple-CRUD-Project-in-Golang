@@ -35,11 +35,45 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(productList)
 }
 
+func CreateProduct(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Access-Control-Allow-Orgin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "Application/json")
+	if r.Method != "POST" {
+		http.Error(w, "Please Give me a POST request", 400)
+		return
+	}
+
+	/*
+     1. take body information( description, imageurl,price, title ) from r.body
+	 2. create the instance using product struct with the body information
+	 3. append the instance into productlist
+	*/
+
+	var newProduct Product
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&newProduct)
+	if err !=nil{
+		fmt.Println(err)
+		http.Error(w, "Please Give me a Valid json", 400)
+		return
+	}
+
+	newProduct.ID = len(productList)+1
+	productList = append(productList, newProduct)
+	w.WriteHeader(201)
+	encoder := json.NewEncoder(w)
+	encoder.Encode(newProduct)
+}
+
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello", hellohandler)
 	mux.HandleFunc("/about", aboutHandller)
 	mux.HandleFunc("/Products", getProduct)
+	mux.HandleFunc("/Create-Product",  CreateProduct)
 	fmt.Println("server running on :8080")
 	err := http.ListenAndServe(":8080", mux)
 
