@@ -25,8 +25,7 @@ type Product struct {
 var productList []Product
 
 func getProduct(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Orgin", "*")
-	w.Header().Set("Content-Type", "Application/json")
+	HandleCors(w)
 	if r.Method != "GET" {
 		http.Error(w, "Please Give me a Get request", 400)
 		return
@@ -36,10 +35,7 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateProduct(w http.ResponseWriter, r *http.Request){
-	w.Header().Set("Access-Control-Allow-Orgin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "Application/json")
+    HandleCors(w)
 	if r.Method != "POST" {
 		http.Error(w, "Please Give me a POST request", 400)
 		return
@@ -66,6 +62,14 @@ func CreateProduct(w http.ResponseWriter, r *http.Request){
 	w.WriteHeader(201)
 	encoder := json.NewEncoder(w)
 	encoder.Encode(newProduct)
+}
+
+func HandleCors(w http.ResponseWriter){
+	w.Header().Set("Access-Control-Allow-Orgin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST ,PUT, PATCH, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "Application/json")
+	
 }
 
 func main() {
